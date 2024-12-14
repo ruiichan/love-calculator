@@ -1,10 +1,17 @@
 import { NextResponse } from 'next/server';
-import type { PredictionResult } from '@/utils/prediction';
 import { nanoid } from 'nanoid';
 
 // 存储分享结果
 declare global {
-  var sharedResults: Record<string, any>;
+  let sharedResults: Record<string, {
+    userId: string | null;
+    score: number;
+    compatibility: number;
+    potential: number;
+    tags: string[];
+    advice: string[];
+    createdAt: string;
+  }>;
 }
 
 if (!global.sharedResults) {

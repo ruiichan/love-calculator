@@ -3,7 +3,17 @@ import { analyzePrediction, generateMatchingAdvice } from '@/utils/prediction';
 
 // 存储测试结果
 declare global {
-  var testResults: any[];
+  let testResults: Array<{
+    id: string;
+    userId: string | null;
+    answers: Record<string, any>;
+    score: number;
+    compatibility: number;
+    potential: number;
+    tags: string[];
+    advice: string[];
+    createdAt: string;
+  }>;
 }
 
 if (!global.testResults) {

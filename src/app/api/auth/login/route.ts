@@ -3,7 +3,12 @@ import { verifyPassword, generateToken } from '@/utils/auth-utils';
 
 // 使用注册API中的用户数组
 declare global {
-  var users: any[];
+  let users: Array<{
+    id: string;
+    email: string;
+    password: string;
+    username: string;
+  }>;
 }
 
 if (!global.users) {
