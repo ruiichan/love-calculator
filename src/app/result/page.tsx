@@ -20,8 +20,8 @@ export default function ResultPage() {
         // 如果没有结果，重定向到测试页面
         router.push('/test');
       }
-    } catch (error) {
-      console.error('获取结果失败:', error);
+    } catch {
+      console.error('获取结果失败');
       setError('获取结果失败');
     } finally {
       setLoading(false);
@@ -51,8 +51,8 @@ export default function ResultPage() {
 
       // 跳转到分享页面
       router.push(data.shareUrl);
-    } catch (error) {
-      console.error('分享失败:', error);
+    } catch (_error) {
+      console.error('分享失败:', _error);
       alert('分享失败，请重试');
     }
   };
@@ -68,16 +68,32 @@ export default function ResultPage() {
     );
   }
 
-  if (!result) {
+  if (error) {
     return (
       <main className="min-h-screen flex items-center justify-center p-4">
         <div className="text-center">
-          <p className="text-red-500">获取结果失败</p>
+          <p className="text-red-500">{error}</p>
           <button
             onClick={() => router.push('/test')}
             className="mt-4 px-6 py-2 bg-pink-500 text-white rounded-md hover:bg-pink-600"
           >
             重新测试
+          </button>
+        </div>
+      </main>
+    );
+  }
+
+  if (!result) {
+    return (
+      <main className="min-h-screen flex items-center justify-center p-4">
+        <div className="text-center">
+          <p className="text-red-500">没有找到测试结果</p>
+          <button
+            onClick={() => router.push('/test')}
+            className="mt-4 px-6 py-2 bg-pink-500 text-white rounded-md hover:bg-pink-600"
+          >
+            开始测试
           </button>
         </div>
       </main>

@@ -1,19 +1,7 @@
 import { NextResponse } from 'next/server';
 import { nanoid } from 'nanoid';
 
-// 存储分享结果
-declare global {
-  let sharedResults: Record<string, {
-    userId: string | null;
-    score: number;
-    compatibility: number;
-    potential: number;
-    tags: string[];
-    advice: string[];
-    createdAt: string;
-  }>;
-}
-
+// 初始化全局分享结果对象
 if (!global.sharedResults) {
   global.sharedResults = {};
 }
@@ -34,11 +22,13 @@ export async function POST(request: Request) {
     const shareId = nanoid(10);
     
     // 保存结果
-    global.sharedResults[shareId] = {
+    const sharedResult: SharedResult = {
       userId: userId || null,
       ...result,
       createdAt: new Date().toISOString()
     };
+    
+    global.sharedResults[shareId] = sharedResult;
 
     // 生成分享链接
     const shareUrl = `/share/${shareId}`;

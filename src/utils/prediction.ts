@@ -1,3 +1,5 @@
+import type { TestAnswers } from '@/types/common';
+
 // 定义结果类型
 export interface PredictionResult {
   score: number;          // 总体匹配分数
@@ -8,7 +10,7 @@ export interface PredictionResult {
 }
 
 // 分析答案并生成预测结果
-export function analyzePrediction(answers: Record<number, any>): PredictionResult {
+export function analyzePrediction(answers: TestAnswers): PredictionResult {
   let score = 0;
   let compatibility = 0;
   let potential = 0;
@@ -21,7 +23,7 @@ export function analyzePrediction(answers: Record<number, any>): PredictionResul
   }
 
   if (answers[2]) { // 年龄范围
-    const ageRange = answers[2];
+    const ageRange = answers[2] as string;
     tags.push(`年龄: ${ageRange}`);
     
     // 根据年龄段给出建议
@@ -32,13 +34,13 @@ export function analyzePrediction(answers: Record<number, any>): PredictionResul
       advice.push('这是寻找长期关系的黄金时期，建议认真对待每一段关系');
       potential += 90;
     } else {
-      advice.push('建议在关系中更注重情感交���和共同价值观');
+      advice.push('建议在关系中更注重情感交流和共同价值观');
       potential += 85;
     }
   }
 
   if (answers[3]) { // 感情状态
-    const status = answers[3];
+    const status = answers[3] as string;
     tags.push(`状态: ${status}`);
     
     if (status === '单身') {
@@ -52,7 +54,7 @@ export function analyzePrediction(answers: Record<number, any>): PredictionResul
 
   // 性格测评分析
   if (answers[4]) { // 外向程度
-    const extroversion = answers[4];
+    const extroversion = Number(answers[4]);
     compatibility += extroversion * 10;
     
     if (extroversion > 3) {
@@ -65,7 +67,7 @@ export function analyzePrediction(answers: Record<number, any>): PredictionResul
   }
 
   if (answers[5]) { // 兴趣爱好
-    const hobbies = answers[5];
+    const hobbies = answers[5] as string[];
     tags.push(...hobbies.map(hobby => `爱好: ${hobby}`));
     
     if (hobbies.length > 3) {
@@ -79,7 +81,7 @@ export function analyzePrediction(answers: Record<number, any>): PredictionResul
 
   // 期望分析
   if (answers[6]) { // 期望的关系类型
-    const expectation = answers[6];
+    const expectation = answers[6] as string;
     tags.push(`期望: ${expectation}`);
     
     if (expectation === '长期稳定关系' || expectation === '婚姻') {
@@ -124,7 +126,7 @@ export function generateMatchingAdvice(result: PredictionResult): string[] {
     advice.push('建议多关注自我提升，为感情做好准备');
   }
 
-  // 根据兼容���给出建议
+  // 根据兼容性给出建议
   if (compatibility >= 85) {
     advice.push('你善于处理人际关系，这对感情很有帮助');
   } else if (compatibility >= 70) {

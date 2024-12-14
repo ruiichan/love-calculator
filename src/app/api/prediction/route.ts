@@ -1,28 +1,20 @@
 import { NextResponse } from 'next/server';
-import { analyzePrediction, generateMatchingAdvice } from '@/utils/prediction';
+import { analyzePrediction, generateMatchingAdvice, type PredictionResult } from '@/utils/prediction';
+import type { TestAnswers } from '@/types/common';
 
-// 存储测试结果
-declare global {
-  let testResults: Array<{
-    id: string;
-    userId: string | null;
-    answers: Record<string, any>;
-    score: number;
-    compatibility: number;
-    potential: number;
-    tags: string[];
-    advice: string[];
-    createdAt: string;
-  }>;
+interface RequestBody {
+  answers: TestAnswers;
+  userId?: string;
 }
 
+// 初始化全局测试结果数组
 if (!global.testResults) {
   global.testResults = [];
 }
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    const body = await request.json() as RequestBody;
     const { answers, userId } = body;
 
     // 验证请求数据
@@ -41,7 +33,7 @@ export async function POST(request: Request) {
     result.advice = [...result.advice, ...additionalAdvice];
 
     // 保存测试结果
-    const testResult = {
+    const testResult: TestResult = {
       id: Date.now().toString(),
       userId: userId || null,
       answers,

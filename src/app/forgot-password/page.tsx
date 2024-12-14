@@ -20,7 +20,7 @@ export default function ForgotPassword() {
       // 临时模拟API调用
       await new Promise(resolve => setTimeout(resolve, 1000));
       setSuccess(true);
-    } catch (err) {
+    } catch (_error) {
       setError('发送重置密码邮件时出错');
     } finally {
       setLoading(false);

@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import type { TestAnswers } from '@/types/common';
+import type { PredictionResult } from '@/utils/prediction';
 
 // 定义问题类型
 interface Question {
@@ -59,18 +61,34 @@ const questions: Question[] = [
     id: 6,
     type: 'single',
     category: '感情经历',
-    question: '您期望的关系类型是？',
+    question: '您期望的���系类型是？',
     options: ['长期稳定关系', '短期约会', '婚姻', '暂时不确定']
   }
 ];
 
+// 类型守卫函数
+function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every(item => typeof item === 'string');
+}
+
+function isNumber(value: unknown): value is number {
+  return typeof value === 'number';
+}
+
+// API响应类型
+interface PredictionResponse {
+  success: boolean;
+  result: PredictionResult;
+  error?: string;
+}
+
 export default function TestPage() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
-  const [answers, setAnswers] = useState<Record<number, any>>({});
+  const [answers, setAnswers] = useState<TestAnswers>({});
   const [loading, setLoading] = useState(false);
 
-  const handleAnswer = (questionId: number, answer: any) => {
+  const handleAnswer = (questionId: number, answer: string | number | string[]) => {
     setAnswers(prev => ({
       ...prev,
       [questionId]: answer
@@ -103,7 +121,7 @@ export default function TestPage() {
         body: JSON.stringify({ answers }),
       });
 
-      const data = await response.json();
+      const data = await response.json() as PredictionResponse;
 
       if (!response.ok) {
         throw new Error(data.error || '提交失败');
@@ -114,9 +132,9 @@ export default function TestPage() {
 
       // 提交成功后跳转到结果页面
       router.push('/result');
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('提交失败:', error);
-      alert('提交失败，请重试');
+      alert(error instanceof Error ? error.message : '提交失败，请重试');
     } finally {
       setLoading(false);
     }
@@ -148,24 +166,29 @@ export default function TestPage() {
       case 'multiple':
         return (
           <div className="space-y-4">
-            {currentQuestion.options?.map((option, index) => (
-              <label key={index} className="flex items-center space-x-3">
-                <input
-                  type="checkbox"
-                  value={option}
-                  checked={answers[currentQuestion.id]?.includes(option)}
-                  onChange={(e) => {
-                    const currentAnswers = answers[currentQuestion.id] || [];
-                    const newAnswers = e.target.checked
-                      ? [...currentAnswers, option]
-                      : currentAnswers.filter((a: string) => a !== option);
-                    handleAnswer(currentQuestion.id, newAnswers);
-                  }}
-                  className="h-4 w-4 rounded text-pink-500 focus:ring-pink-500"
-                />
-                <span className="text-gray-700 dark:text-gray-300">{option}</span>
-              </label>
-            ))}
+            {currentQuestion.options?.map((option, index) => {
+              const answer = answers[currentQuestion.id];
+              const isArray = isStringArray(answer);
+              const currentAnswers = isArray ? answer : [];
+              
+              return (
+                <label key={index} className="flex items-center space-x-3">
+                  <input
+                    type="checkbox"
+                    value={option}
+                    checked={isArray && currentAnswers.includes(option)}
+                    onChange={(e) => {
+                      const newAnswers = e.target.checked
+                        ? [...currentAnswers, option]
+                        : currentAnswers.filter((item: string) => item !== option);
+                      handleAnswer(currentQuestion.id, newAnswers);
+                    }}
+                    className="h-4 w-4 rounded text-pink-500 focus:ring-pink-500"
+                  />
+                  <span className="text-gray-700 dark:text-gray-300">{option}</span>
+                </label>
+              );
+            })}
           </div>
         );
 
@@ -176,7 +199,7 @@ export default function TestPage() {
               type="range"
               min={currentQuestion.min}
               max={currentQuestion.max}
-              value={answers[currentQuestion.id] || currentQuestion.min}
+              value={isNumber(answers[currentQuestion.id]) ? answers[currentQuestion.id] : currentQuestion.min}
               onChange={(e) => handleAnswer(currentQuestion.id, parseInt(e.target.value))}
               className="w-full"
             />

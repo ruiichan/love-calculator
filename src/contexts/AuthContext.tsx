@@ -27,15 +27,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  const login = async (email: string, password: string) => {
-    // TODO: 实现实际的登录逻辑
+  // TODO: 实现实际的登录逻辑，目前使用模拟数据
+  const login = async (email: string, _password: string) => {
+    // 在实际实现中，这里应该：
+    // 1. 调用后端 API 进行密码验证
+    // 2. 获取用户信息和认证令牌
+    // 3. 存储认证状态
     const mockUser = { id: '1', username: 'test', email };
     setUser(mockUser);
     localStorage.setItem('user', JSON.stringify(mockUser));
   };
 
-  const register = async (username: string, email: string, password: string) => {
-    // TODO: 实现实际的注册逻辑
+  // TODO: 实现实际的注册逻辑，目前使用模拟数据
+  const register = async (username: string, email: string, _password: string) => {
+    // 在实际实现中，这里应该：
+    // 1. 调用后端 API 创建新用户
+    // 2. 进行密码加密
+    // 3. 获取注册成功后的用户信息
     const mockUser = { id: '1', username, email };
     setUser(mockUser);
     localStorage.setItem('user', JSON.stringify(mockUser));

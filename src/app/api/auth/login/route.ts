@@ -1,16 +1,7 @@
 import { NextResponse } from 'next/server';
 import { verifyPassword, generateToken } from '@/utils/auth-utils';
 
-// 使用注册API中的用户数组
-declare global {
-  let users: Array<{
-    id: string;
-    email: string;
-    password: string;
-    username: string;
-  }>;
-}
-
+// 初始化全局用户数组
 if (!global.users) {
   global.users = [];
 }
@@ -46,9 +37,8 @@ export async function POST(request: Request) {
         { status: 401 }
       );
     }
-
     // 生成token
-    const token = generateToken(user.id);
+    const token = generateToken(Number(user.id));
 
     // 返回成功响应
     return NextResponse.json({

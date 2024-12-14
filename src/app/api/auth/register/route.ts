@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import { hashPassword } from '@/utils/auth-utils';
+import type { User } from '@/types/common';
 
 // 模拟用户存储
-const users: any[] = [];
+const users: User[] = [];
 
 export async function POST(request: Request) {
   try {
@@ -28,12 +29,11 @@ export async function POST(request: Request) {
 
     // 创建新用户
     const hashedPassword = await hashPassword(password);
-    const newUser = {
+    const newUser: User = {
       id: Date.now().toString(),
       username,
       email,
-      password: hashedPassword,
-      createdAt: new Date().toISOString()
+      password: hashedPassword
     };
 
     // 保存用户数据
