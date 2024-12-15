@@ -28,7 +28,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   // TODO: 实现实际的登录逻辑，目前使用模拟数据
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, _password: string) => {
     // 在实际实现中，这里应该：
     // 1. 调用后端 API 进行密码验证
     // 2. 获取用户信息和认证令牌
