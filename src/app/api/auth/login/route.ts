@@ -1,10 +1,6 @@
 import { NextResponse } from 'next/server';
 import { verifyPassword, generateToken } from '@/utils/auth-utils';
-
-// 初始化全局用户数组
-if (!global.users) {
-  global.users = [];
-}
+import { getUsers } from '@/utils/global-state';
 
 export async function POST(request: Request) {
   try {
@@ -21,7 +17,7 @@ export async function POST(request: Request) {
     }
 
     // 查找用户
-    const user = global.users.find(u => u.email === email);
+    const user = getUsers().find(u => u.email === email);
     if (!user) {
       return NextResponse.json(
         { error: '用户不存在' },
@@ -37,6 +33,7 @@ export async function POST(request: Request) {
         { status: 401 }
       );
     }
+
     // 生成token
     const token = generateToken(Number(user.id));
 

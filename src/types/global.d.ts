@@ -31,10 +31,19 @@ declare global {
     createdAt: string;
   }
 
+  // 扩展 NodeJS 全局变量
+  namespace NodeJS {
+    interface Global {
+      users: User[];
+      testResults: TestResult[];
+      sharedResults: Record<string, SharedResult>;
+    }
+  }
+
   // 扩展全局变量
-  var users: User[];
-  var testResults: TestResult[];
-  var sharedResults: Record<string, SharedResult>;
+  let users: User[];
+  let testResults: TestResult[];
+  let sharedResults: Record<string, SharedResult>;
 }
 
 export {}; 

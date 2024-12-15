@@ -2,7 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import type { PredictionResult } from '@/utils/prediction';
+
+interface SharedResult {
+  score: number;
+  compatibility: number;
+  potential: number;
+  tags: string[];
+  advice: string[];
+}
 
 // 社交媒体分享按钮组件
 const ShareButtons = ({ url, title }: { url: string; title: string }) => {
@@ -38,14 +45,14 @@ const ShareButtons = ({ url, title }: { url: string; title: string }) => {
 
 export default function SharePage({ params }: { params: { id: string } }) {
   const router = useRouter();
-  const [result, setResult] = useState<PredictionResult | null>(null);
+  const [result, setResult] = useState<SharedResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchSharedResult = async () => {
       try {
-        const response = await fetch(`/api/share?id=${params.id}`);
+        const response = await fetch(`/api/shared/${params.id}`);
         const data = await response.json();
 
         if (!response.ok) {

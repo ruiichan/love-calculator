@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server';
 import { hashPassword } from '@/utils/auth-utils';
 import type { User } from '@/types/common';
-
-// 模拟用户存储
-const users: User[] = [];
+import { getUsers, addUser } from '@/utils/global-state';
 
 export async function POST(request: Request) {
   try {
@@ -19,7 +17,7 @@ export async function POST(request: Request) {
     }
 
     // 检查邮箱是否已被注册
-    const existingUser = users.find(user => user.email === email);
+    const existingUser = getUsers().find(user => user.email === email);
     if (existingUser) {
       return NextResponse.json(
         { error: '该邮箱已被注册' },
@@ -37,7 +35,7 @@ export async function POST(request: Request) {
     };
 
     // 保存用户数据
-    users.push(newUser);
+    addUser(newUser);
 
     // 返回成功响应
     return NextResponse.json({

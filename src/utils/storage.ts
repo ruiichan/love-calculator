@@ -1,4 +1,4 @@
-import type { User, StorageItem, TestAnswers } from '@/types/common';
+import type { User } from '@/types/common';
 
 // 用户数据存储
 export const saveUser = (user: User): void => {

@@ -29,7 +29,7 @@ export default function Page() {
       } else {
         setError(result.error || '登录失败，请检查您的邮箱和密码');
       }
-    } catch (_error) {
+    } catch (err) {
       setError('登录过程中发生错误');
     } finally {
       setLoading(false);

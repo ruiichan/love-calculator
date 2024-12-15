@@ -1,48 +1,53 @@
 import { NextResponse } from 'next/server';
 import { nanoid } from 'nanoid';
-
-// 初始化全局分享结果对象
-if (!global.sharedResults) {
-  global.sharedResults = {};
-}
+import { getTestResults, addSharedResult, getSharedResults } from '@/utils/global-state';
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { result, userId } = body;
+    const { resultId } = body;
 
-    if (!result) {
+    if (!resultId) {
       return NextResponse.json(
-        { error: '请提供预测结果' },
+        { error: '请提供测试结果ID' },
         { status: 400 }
+      );
+    }
+
+    // 查找测试结果
+    const testResult = getTestResults().find(result => result.id === resultId);
+    if (!testResult) {
+      return NextResponse.json(
+        { error: '未找到测试结果' },
+        { status: 404 }
       );
     }
 
     // 生成分享ID
     const shareId = nanoid(10);
-    
-    // 保存结果
-    const sharedResult: SharedResult = {
-      userId: userId || null,
-      ...result,
+
+    // 保存分享结果
+    const sharedResult = {
+      userId: testResult.userId,
+      score: testResult.score,
+      compatibility: testResult.compatibility,
+      potential: testResult.potential,
+      tags: testResult.tags,
+      advice: testResult.advice,
       createdAt: new Date().toISOString()
     };
-    
-    global.sharedResults[shareId] = sharedResult;
 
-    // 生成分享链接
-    const shareUrl = `/share/${shareId}`;
+    addSharedResult(shareId, sharedResult);
 
     return NextResponse.json({
       success: true,
-      shareId,
-      shareUrl
+      shareId
     });
 
   } catch (error) {
     console.error('Share error:', error);
     return NextResponse.json(
-      { error: '生成分享链接时发生错误' },
+      { error: '分享过程中发生错误' },
       { status: 500 }
     );
   }
@@ -61,7 +66,8 @@ export async function GET(request: Request) {
     }
 
     // 获取分享的结果
-    const result = global.sharedResults[shareId];
+    const sharedResults = getSharedResults();
+    const result = sharedResults[shareId];
 
     if (!result) {
       return NextResponse.json(

@@ -1,15 +1,11 @@
 import { NextResponse } from 'next/server';
-import { analyzePrediction, generateMatchingAdvice, type PredictionResult } from '@/utils/prediction';
+import { analyzePrediction, generateMatchingAdvice } from '@/utils/prediction';
 import type { TestAnswers } from '@/types/common';
+import { addTestResult } from '@/utils/global-state';
 
 interface RequestBody {
   answers: TestAnswers;
   userId?: string;
-}
-
-// 初始化全局测试结果数组
-if (!global.testResults) {
-  global.testResults = [];
 }
 
 export async function POST(request: Request) {
@@ -33,7 +29,7 @@ export async function POST(request: Request) {
     result.advice = [...result.advice, ...additionalAdvice];
 
     // 保存测试结果
-    const testResult: TestResult = {
+    const testResult = {
       id: Date.now().toString(),
       userId: userId || null,
       answers,
@@ -41,7 +37,7 @@ export async function POST(request: Request) {
       createdAt: new Date().toISOString()
     };
 
-    global.testResults.push(testResult);
+    addTestResult(testResult);
 
     return NextResponse.json({
       success: true,
