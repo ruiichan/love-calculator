@@ -39,7 +39,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   // TODO: 实现实际的注册逻辑，目前使用模拟数据
-  const register = async (username: string, email: string, password: string) => {
+  const register = async (username: string, email: string, _password: string) => {
     // 在实际实现中，这里应该：
     // 1. 调用后端 API 创建新用户
     // 2. 进行密码加密
